@@ -1,0 +1,23 @@
+{
+  "name": "paperspace",
+  "version": "1.0.0",
+  "description": "2D Collaborative Drawing App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itsgalo/paperspace.git"
+  },
+  "keywords": [
+    "drawing",
+    "app"
+  ],
+  "author": "itsgalo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itsgalo/paperspace/issues"
+  },
+  "homepage": "https://github.com/itsgalo/paperspace#readme"
+}
