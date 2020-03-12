@@ -19,5 +19,10 @@
   "bugs": {
     "url": "https://github.com/itsgalo/paperspace/issues"
   },
-  "homepage": "https://github.com/itsgalo/paperspace#readme"
+  "homepage": "https://github.com/itsgalo/paperspace#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "p5": "^1.0.0",
+    "socket.io": "^2.3.0"
+  }
 }
