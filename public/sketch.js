@@ -9,13 +9,17 @@ function setup() {
   socket = io.connect();
   socket.on('connect', () => {
     let id = socket.id;
-    //socket.emit('getCount', id);
+    cursors.push(new drawCursor(id, 0, 0));
   });
   socket.on('mouse', newDrawing);
   socket.on('cursor', cursorPos);
   socket.on('new user', newCursor);
+  socket.on('bye user', byeCursor);
 }
 
+function byeCursor(data) {
+  cursors.splice(data.user, 1);
+}
 
 function newDrawing(data) {
   lines.push(new drawLine(data.x, data.y, data.px, data.py));
@@ -36,6 +40,8 @@ function drawCursor(id, x, y) {
   this.y = y;
   this.show = function () {
     fill(255, 0, 0);
+    stroke(255);
+    strokeWeight(5);
     ellipse(this.x, this.y, 20, 20);
   }
 }

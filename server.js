@@ -25,7 +25,6 @@ function newConnection(socket) {
   addUser();
   io.sockets.emit('connected', {connections: totalUsers});
   socket.broadcast.emit('new user', {user: thisID});
-  socket.emit('init',{player: thisID, group: userGroup});
   socket.on('disconnect', function(){
     removeUser(thisID);
     socket.broadcast.emit('bye user', {connections: totalUsers, user: thisID});
@@ -37,7 +36,7 @@ function newConnection(socket) {
   }
   socket.on('cursor', cursorMessage);
   function cursorMessage(cursorProps) {
-    socket.broadcast.emit('cursor', {session_id: socket.id, coords: cursorProps});
+    io.emit('cursor', {session_id: socket.id, coords: cursorProps});
   }
   console.log(totalUsers);
 }
