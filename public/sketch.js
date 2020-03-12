@@ -1,12 +1,19 @@
 let socket;
 let pg;
 let lines = [];
+let cursors = [];
 
 function setup() {
   createCanvas(window.windowWidth, window.windowHeight);
   background(51);
-  socket = io.connect('http://18.234.15.82:3000');
+  socket = io.connect();
+  socket.on('connect', () => {
+    let id = socket.id;
+    //socket.emit('getCount', id);
+  });
   socket.on('mouse', newDrawing);
+  socket.on('cursor', cursorPos);
+  socket.on('new user', newCursor);
 }
 
 
@@ -14,11 +21,43 @@ function newDrawing(data) {
   lines.push(new drawLine(data.x, data.y, data.px, data.py));
 }
 
+function newCursor(user) {
+  cursors.push(new drawCursor(user.user, 0, 0));
+}
+function cursorPos(data) {
+  for (var i = 0; i < cursors.length; i++) {
+    cursors[i].x = data.coords.x;
+    cursors[i].y = data.coords.y;
+  }
+}
+function drawCursor(id, x, y) {
+  this.id = id;
+  this.x = x;
+  this.y = y;
+  this.show = function () {
+    fill(255, 0, 0);
+    ellipse(this.x, this.y, 20, 20);
+  }
+}
+
 function draw() {
   background(51);
   for (var i = 0; i < lines.length; i++) {
     lines[i].show();
   }
+  for (var i = 0; i < cursors.length; i++) {
+    cursors[i].show();
+  }
+}
+
+function mouseMoved() {
+  let cursorProps = {
+    x: mouseX,
+    y: mouseY,
+  }
+
+  socket.emit('cursor', cursorProps);
+
 }
 
 function mouseDragged(e) {
@@ -34,7 +73,6 @@ function mouseDragged(e) {
   socket.emit('mouse', data);
 
   lines.push(new drawLine(mouseX, mouseY, pmouseX, pmouseY));
-  console.log(lines);
 
   return false;
 }
