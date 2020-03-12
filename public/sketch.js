@@ -5,7 +5,7 @@ let lines = [];
 function setup() {
   createCanvas(window.windowWidth, window.windowHeight);
   background(51);
-  socket = io.connect('http://52.207.62.235:3000');
+  socket = io.connect('http://18.234.15.82:3000/');
   socket.on('mouse', newDrawing);
 }
 
