@@ -7,7 +7,7 @@ class Player {
   }
 
 
-  draw(shape) {
+  draw(shape, canvas) {
     noStroke();
     strokeWeight(5);
     fill(this.rgb.r, this.rgb.g, this.rgb.b);
@@ -16,10 +16,10 @@ class Player {
       rect(this.x, this.y, 10, 50);
       rect(this.x, this.y, 50, 10);
     } else if (shape == 1) {
-      ellipse(this.x, this.y, 30, 30);
+      canvas.ellipse(this.x, this.y, 30, 30);
     } else if (shape == 2) {
-      rectMode(CENTER);
-      rect(this.x, this.y, 40, 40);
+      canvas.rectMode(CENTER);
+      canvas.rect(this.x, this.y, 40, 40);
     }
   }
 
