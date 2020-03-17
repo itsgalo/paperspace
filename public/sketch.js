@@ -21,7 +21,7 @@ function setup() {
   closeButton.position(20, 20);
   closeButton.mousePressed(resetCanvas);
 
-  screenButton = createButton('⭳');
+  screenButton = createButton('↓');
   screenButton.position(20, 80);
   screenButton.mousePressed(screenShot);
 }
