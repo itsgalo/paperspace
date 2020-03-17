@@ -1,5 +1,5 @@
 let socket;
-let closeButton;
+let closeButton, screenButton;
 let canvasIMG, updatedCanvas;
 let lines = [];
 let cursors = [];
@@ -20,6 +20,10 @@ function setup() {
   closeButton = createButton('×');
   closeButton.position(20, 20);
   closeButton.mousePressed(resetCanvas);
+
+  screenButton = createButton('⭳');
+  screenButton.position(20, 80);
+  screenButton.mousePressed(screenShot);
 }
 
 function rLines(lineID) {
@@ -28,6 +32,10 @@ function rLines(lineID) {
 
 function resetCanvas() {
   socket.emit('removeLines', lines);
+}
+
+function screenShot() {
+  saveCanvas('MyPaperspace', 'png');
 }
 
 function getLines(bufferArray) {
