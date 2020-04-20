@@ -47,7 +47,10 @@ function newConnection(socket) {
   }
   socket.on('cursor', cursorMessage);
   function cursorMessage(cursorProps) {
-    io.emit('cursor', {id: socket.id, coords: cursorProps});
+    io.emit('cursor', {
+      id: socket.id,
+      coords: cursorProps
+    });
   }
   socket.on('oldLines', getOldLines);
   function getOldLines(lines) {
