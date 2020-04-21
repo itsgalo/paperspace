@@ -10,6 +10,9 @@ let cc = rand(15);
 let r = rand(255);
 let g = rand(255);
 let b = rand(255);
+let bgr = 200 + rand(50);
+let bgg = 170;
+let bgb = rand(250);
 let xoff = 0.0;
 
 
@@ -76,7 +79,8 @@ function newDrawing(data) {
 }
 
 function draw() {
-  background(252, 173, 3);
+  background(bgr, bgg, bgb);
+  //background(252, 173, 3);
   xoff = xoff + 0.005;
   let n = noise(xoff) * 20;
   //players.forEach(player => player.draw(0, canvasIMG));
