@@ -158,6 +158,9 @@ function touchMoved(e) {
   socket.emit('mouse', data);
   //draw lines from this user
   lines.push(new drawLine(mouseX, mouseY, pmouseX, pmouseY, socket.id, r, g, b));
+  if(lines.length > 400) {
+    socket.emit('spliceLines', lines);
+  }
   //send lines to server
   socket.emit('oldLines', data);
 
