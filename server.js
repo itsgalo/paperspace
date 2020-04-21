@@ -63,6 +63,13 @@ function newConnection(socket) {
     io.emit('removeLines', lines);
     lineBuffer = [];
   }
+  socket.on('spliceLines', splitLines);
+  function splitLines(lines) {
+    //io.emit('spliceLines', lines);
+    lineBuffer.splice(0, 1);
+    console.log(lineBuffer.length);
+    console.log("spliced!");
+  }
 
   //socket.on('updateCanvas', updateBuffer);
   //function updateBuffer(updatedCanvas) {

@@ -23,7 +23,8 @@ function setup() {
   socket.on('oldLines', lineBuffer => getLines(lineBuffer));
   socket.on('mouse', newDrawing);
   socket.on('cursor', cursorPos);
-  socket.on('removeLines', lineID => rLines(lineID));
+  socket.on('removeLines', rline => rLines(rline));
+  socket.on('spliceLines', sline => sLines(sline));
 
   closeButton = createButton('×');
   closeButton.position(20, 20);
@@ -35,8 +36,12 @@ function setup() {
 
 }
 
-function rLines(lineID) {
+function rLines(rline) {
   lines = [];
+}
+
+function sLines(sline) {
+  lines.splice(0, 1);
 }
 
 function resetCanvas() {
@@ -67,31 +72,37 @@ function newDrawing(data) {
   //draw what someone else is drawing
   lines.push(new drawLine(data.x, data.y, data.px, data.py, data.id, data.r, data.g, data.b));
   //lines.push(data.x, data.y, data.px, data.py);
-  console.log(data.id + ' is drawing');
+  //console.log(data.id + ' is drawing');
 }
 
 function draw() {
   background(252, 173, 3);
   xoff = xoff + 0.005;
   let n = noise(xoff) * 20;
-  players.forEach(player => player.draw(0, canvasIMG));
+  //players.forEach(player => player.draw(0, canvasIMG));
   for (var i = 0; i < lines.length; i++) {
     lines[i].show(n);
   }
-  if(lines.length > 200) {
+  for(var i = 0; i < players.length; i++){
+    players[i].draw(i, canvasIMG);
+  }
+  if(lines.length > 400) {
     lines.splice(0, 1);
   }
+
+  textSize(32);
+  fill(255);
+  text(lines.length + " lines", 20, windowHeight -40);
 }
 
 function checkPlayers(serverPlayers) {
-  console.log('new user '+ serverPlayers.length);
+  //console.log('new user '+ serverPlayers.length);
   //clears array to update players
   players = [];
   updatePlayers(serverPlayers);
   if(serverPlayers.length > 1) {
     roomEmpty = false;
   }
-  console.log(players[0].rgb);
 }
 
 function updatePlayers(serverPlayers) {
@@ -149,7 +160,6 @@ function touchMoved(e) {
   lines.push(new drawLine(mouseX, mouseY, pmouseX, pmouseY, socket.id, r, g, b));
   //send lines to server
   socket.emit('oldLines', data);
-  console.log(lines.length);
 
   return false;
 }
@@ -176,9 +186,11 @@ function mouseDragged(e) {
   socket.emit('mouse', data);
   //draw lines from this user
   lines.push(new drawLine(mouseX, mouseY, pmouseX, pmouseY, socket.id, r, g, b));
+  if(lines.length > 400) {
+    socket.emit('spliceLines', lines);
+  }
   //send lines to server
   socket.emit('oldLines', data);
-  console.log(lines.length);
 
   return false;
 }
