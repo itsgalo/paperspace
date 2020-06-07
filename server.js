@@ -15,7 +15,7 @@ server.listen('3000', "0.0.0.0");
 const socket = require('socket.io');
 const io = socket(server);
 let players = [];
-let lineBuffer = [];
+//let lineBuffer = [];
 
 //setInterval(updateGame, 1600);
 
@@ -25,9 +25,8 @@ function newConnection(socket) {
   console.log('new connection! ' + socket.id);
   //create new user
   players.push(new Player(socket.id));
-  console.log(players.length);
   io.emit('heartbeat', players);
-  io.emit('oldLines', lineBuffer);
+  //io.emit('oldLines', lineBuffer);
   //if(players.length > 1) {
     //io.emit('newCanvas', canvasBuffer);
   //}
@@ -37,7 +36,7 @@ function newConnection(socket) {
     console.log('lost player');
     io.sockets.emit('disconnect', socket.id);
     players = players.filter(player => player.id !== socket.id);
-    lineBuffer = lineBuffer.filter(line => line.id !== socket.id);
+    //lineBuffer = lineBuffer.filter(line => line.id !== socket.id);
     //console.log(lineBuffer.length);
   });
   //this listens for mouse function in sketch.js
@@ -52,24 +51,24 @@ function newConnection(socket) {
       coords: cursorProps
     });
   }
-  socket.on('oldLines', getOldLines);
-  function getOldLines(lines) {
-    io.emit('oldLines', lines);
-    //lineBuffer = [];
-    lineBuffer.push(lines);
-  }
-  socket.on('removeLines', updateLines);
-  function updateLines(lines) {
-    io.emit('removeLines', lines);
-    lineBuffer = [];
-  }
-  socket.on('spliceLines', splitLines);
-  function splitLines(lines) {
-    //io.emit('spliceLines', lines);
-    lineBuffer.splice(0, 1);
-    console.log(lineBuffer.length);
-    console.log("spliced!");
-  }
+  // socket.on('oldLines', getOldLines);
+  // function getOldLines(lines) {
+  //   io.emit('oldLines', lines);
+  //   //lineBuffer = [];
+  //   lineBuffer.push(lines);
+  // }
+  // socket.on('removeLines', updateLines);
+  // function updateLines(lines) {
+  //   io.emit('removeLines', lines);
+  //   lineBuffer = [];
+  // }
+  // socket.on('spliceLines', splitLines);
+  // function splitLines(lines) {
+  //   //io.emit('spliceLines', lines);
+  //   lineBuffer.splice(0, 1);
+  //   console.log(lineBuffer.length);
+  //   console.log("spliced!");
+  // }
 
   //socket.on('updateCanvas', updateBuffer);
   //function updateBuffer(updatedCanvas) {

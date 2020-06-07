@@ -14,24 +14,20 @@ let bgr = 200 + rand(50);
 let bgg = 170;
 let bgb = rand(250);
 let xoff = 0.0;
-let alph = 1;
-let friendIsDrawing = false;
-let isDrawing = false;
+
 
 function setup() {
   pixelDensity(1);
-  noCursor();
   createCanvas(window.windowWidth, window.windowHeight);
-  background(bgr, bgg, bgb);
 
   socket = io.connect();
   socket.on('heartbeat', players => checkPlayers(players));
   socket.on('disconnect', playerID => removePlayer(playerID));
-  //socket.on('oldLines', lineBuffer => getLines(lineBuffer));
+  socket.on('oldLines', lineBuffer => getLines(lineBuffer));
   socket.on('mouse', newDrawing);
   socket.on('cursor', cursorPos);
-  //socket.on('removeLines', rline => rLines(rline));
-  //socket.on('spliceLines', sline => sLines(sline));
+  socket.on('removeLines', rline => rLines(rline));
+  socket.on('spliceLines', sline => sLines(sline));
 
   closeButton = createButton('×');
   closeButton.position(20, 20);
@@ -43,48 +39,64 @@ function setup() {
 
 }
 
+function rLines(rline) {
+  lines = [];
+}
+
+function sLines(sline) {
+  lines.splice(0, 1);
+}
+
 function resetCanvas() {
-  //socket.emit('removeLines', lines);
-  background(bgr, bgg, bgb);
+  socket.emit('removeLines', lines);
 }
 
 function screenShot() {
   saveCanvas('MyPaperspace', 'png');
 }
 
+function getLines(bufferArray) {
+  for (let i = 0; i < bufferArray.length; i++) {
+    let lineFromServer = bufferArray[i];
+        lines.push(new drawLine(
+          lineFromServer.x,
+          lineFromServer.y,
+          lineFromServer.px,
+          lineFromServer.py,
+          lineFromServer.id,
+          lineFromServer.r,
+          lineFromServer.g,
+          lineFromServer.b
+        ));
+  }
+}
+
 function newDrawing(data) {
   //draw what someone else is drawing
-  for (let i = 0; i < 10; i++) {
-    fill(data.r, data.g, data.b);
-    rect(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
-    rect(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
-    rect(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
-    rect(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
-  }
-
-  //lines.push(data.x, data.y);
+  lines.push(new drawLine(data.x, data.y, data.px, data.py, data.id, data.r, data.g, data.b));
+  //lines.push(data.x, data.y, data.px, data.py);
   //console.log(data.id + ' is drawing');
 }
 
 function draw() {
-  background(bgr, bgg, bgb, alph);
-  rectMode(CENTER);
+  background(bgr, bgg, bgb);
   //background(252, 173, 3);
   xoff = xoff + 0.005;
   let n = noise(xoff) * 20;
   //players.forEach(player => player.draw(0, canvasIMG));
-
-  if(isDrawing || friendIsDrawing) {
-    alph = 1;
-  } else {
-    alph += 0.01;
-    if (alph >= 256) {
-      alph = 0;
-    }
+  for (var i = 0; i < lines.length; i++) {
+    lines[i].show(n);
   }
   for(var i = 0; i < players.length; i++){
-    players[i].draw(i, canvasIMG, players[i].rgb.r, players[i].rgb.g, players[i].rgb.b, n);
+    players[i].draw(i, canvasIMG);
   }
+  if(lines.length > 400) {
+    lines.splice(0, 1);
+  }
+
+  textSize(32);
+  fill(255);
+  text(lines.length + " lines", 20, windowHeight -40);
 }
 
 function checkPlayers(serverPlayers) {
@@ -115,17 +127,6 @@ function cursorPos(data) {
     let cursorID = players.find(player => player.id == data.id);
     cursorID.x = data.coords.x;
     cursorID.y = data.coords.y;
-
-    let thisPlayer = players.find(player => player.id == data.id);
-    r = thisPlayer.rgb.r;
-    g = thisPlayer.rgb.g;
-    b = thisPlayer.rgb.b;
-
-    if (data.coords.isDrawing == true) {
-      friendIsDrawing = true;
-    } else if(data.coords.isDrawing == false) {
-      friendIsDrawing = false;
-    }
 }
 
 function rand(max) {
@@ -133,22 +134,16 @@ function rand(max) {
 }
 
 function mouseMoved() {
-
   let cursorProps = {
     x: mouseX,
-    y: mouseY,
-    isDrawing: isDrawing
+    y: mouseY
   }
   socket.emit('cursor', cursorProps);
 }
-
 function touchMoved(e) {
-  isDrawing = true;
-
   let cursorProps = {
     x: mouseX,
-    y: mouseY,
-    isDrawing: isDrawing
+    y: mouseY
   }
   socket.emit('cursor', cursorProps);
 
@@ -157,21 +152,16 @@ function touchMoved(e) {
   let data = {
     x: mouseX,
     y: mouseY,
+    px: pmouseX,
+    py: pmouseY,
     id: socket.id,
     r: r,
     g: g,
     b: b
   }
   socket.emit('mouse', data);
-  //draw splat from this user
-  for (let i = 0; i < 10; i++) {
-    fill(r, g, b);
-    rect(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
-    rect(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
-    rect(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
-    rect(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
-  }
-
+  //draw lines from this user
+  lines.push(new drawLine(mouseX, mouseY, pmouseX, pmouseY, socket.id, r, g, b));
   if(lines.length > 400) {
     socket.emit('spliceLines', lines);
   }
@@ -180,19 +170,11 @@ function touchMoved(e) {
 
   return false;
 }
-function touchEnded(e) {
-  isDrawing = false;
-}
-function mouseReleased(e) {
-  isDrawing = false;
-}
+
 function mouseDragged(e) {
-  isDrawing = true;
-
   let cursorProps = {
     x: mouseX,
-    y: mouseY,
-    isDrawing: isDrawing
+    y: mouseY
   }
   socket.emit('cursor', cursorProps);
 
@@ -201,21 +183,16 @@ function mouseDragged(e) {
   let data = {
     x: mouseX,
     y: mouseY,
+    px: pmouseX,
+    py: pmouseY,
     id: socket.id,
     r: r,
     g: g,
     b: b
   }
   socket.emit('mouse', data);
-  //draw splat from this user
-  for (let i = 0; i < 10; i++) {
-    fill(r, g, b);
-    rect(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
-    rect(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
-    rect(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
-    rect(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
-  }
-
+  //draw lines from this user
+  lines.push(new drawLine(mouseX, mouseY, pmouseX, pmouseY, socket.id, r, g, b));
   if(lines.length > 400) {
     socket.emit('spliceLines', lines);
   }
@@ -223,6 +200,16 @@ function mouseDragged(e) {
   socket.emit('oldLines', data);
 
   return false;
+}
+
+function drawLine(x, y, px, py, id, red, green, blue) {
+  this.id = id;
+  this.show = function(noise) {
+
+      stroke(red, green, blue);
+      strokeWeight(5 + noise + rand(4));
+      line(x, y, px, py);
+  }
 }
 
 function windowResized() {

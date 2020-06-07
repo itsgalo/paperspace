@@ -7,18 +7,21 @@ class Player {
   }
 
 
-  draw(shape, canvas) {
+  draw(shape, canvas, r, g, b, n) {
     noStroke();
-    fill(this.rgb.r, this.rgb.b, this.rgb.g);
+    fill(r, g, b);
+    rectMode(CENTER);
     //even number, odd number
     if (shape % 2 == 0) {
-      rectMode(CENTER);
-      rect(this.x, this.y, 15, 60);
-      rect(this.x, this.y, 60, 15);
+      rect(this.x, this.y+random(15,20), n, n);
+      rect(this.x-random(15,20), this.y, n, n);
+      rect(this.x, this.y-random(15,20), n, n);
+      rect(this.x+random(15,20), this.y, n, n);
     } else if (shape % 2 != 0) {
-      ellipse(this.x, this.y, 60, 60);
-      fill(252, 173, 3);
-      ellipse(this.x, this.y, 30, 30);
+      rect(this.x, this.y+random(15,20), n * 0.5, n *0.5);
+      rect(this.x-random(15,20), this.y, n * 0.5, n *0.5);
+      rect(this.x, this.y-random(15,20), n * 0.5, n *0.5);
+      rect(this.x+random(15,20), this.y, n * 0.5, n *0.5);
     }
   }
 
