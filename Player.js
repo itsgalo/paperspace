@@ -1,5 +1,5 @@
 class Player {
-  constructor(id) {
+  constructor(id, red, green, blue) {
     this.x = Math.random() * 400 + 1;
     this.y = Math.random() * 400 + 1;
     this.id = id;

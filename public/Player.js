@@ -7,7 +7,7 @@ class Player {
   }
 
 
-  draw(shape, canvas, r, g, b, n) {
+  draw(shape, canvas, n) {
     noStroke();
     fill(r, g, b);
     rectMode(CENTER);

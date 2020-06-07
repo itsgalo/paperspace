@@ -1,12 +1,8 @@
 let socket;
-let closeButton, screenButton;
+let closeButton, screenButton, colorButton;
 let canvasIMG, updatedCanvas;
-let lines = [];
 let cursors = [];
 let players = [];
-let aa = rand(40);
-let bb = rand(40);
-let cc = rand(15);
 let r = rand(255);
 let g = rand(255);
 let b = rand(255);
@@ -17,6 +13,7 @@ let xoff = 0.0;
 let alph = 1;
 let friendIsDrawing = false;
 let isDrawing = false;
+let thisPlayer;
 
 function setup() {
   pixelDensity(1);
@@ -38,18 +35,36 @@ function setup() {
   closeButton.mousePressed(resetCanvas);
 
   screenButton = createButton('↓');
-  screenButton.position(20, 80);
+  screenButton.position(20, windowHeight - 100);
   screenButton.mousePressed(screenShot);
 
-}
+  colorButton = createButton('#');
+  colorButton.position(windowWidth - 90, 20);
+  colorButton.mousePressed(changeColor);
 
+  linkButton = createButton('?');
+  linkButton.position(windowWidth - 90, windowHeight - 100);
+  linkButton.mousePressed(goTo);
+
+}
+function goTo() {
+  window.open('http://officeca.com');
+}
 function resetCanvas() {
   //socket.emit('removeLines', lines);
   background(bgr, bgg, bgb);
 }
 
+function changeColor() {
+  if (thisPlayer != undefined) {
+    thisPlayer.rgb.r = rand(255);
+    thisPlayer.rgb.g = rand(255);
+    thisPlayer.rgb.b = rand(255);
+  }
+}
+
 function screenShot() {
-  saveCanvas('MyPaperspace', 'png');
+  saveCanvas('OurPaperSpace', 'png');
 }
 
 function newDrawing(data) {
@@ -61,15 +76,12 @@ function newDrawing(data) {
     rect(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
     rect(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
   }
-
-  //lines.push(data.x, data.y);
   //console.log(data.id + ' is drawing');
 }
 
 function draw() {
   background(bgr, bgg, bgb, alph);
   rectMode(CENTER);
-  //background(252, 173, 3);
   xoff = xoff + 0.005;
   let n = noise(xoff) * 20;
   //players.forEach(player => player.draw(0, canvasIMG));
@@ -83,12 +95,11 @@ function draw() {
     }
   }
   for(var i = 0; i < players.length; i++){
-    players[i].draw(i, canvasIMG, players[i].rgb.r, players[i].rgb.g, players[i].rgb.b, n);
+    players[i].draw(i, canvasIMG, n);
   }
 }
 
 function checkPlayers(serverPlayers) {
-  //console.log('new user '+ serverPlayers.length);
   //clears array to update players
   players = [];
   updatePlayers(serverPlayers);
@@ -108,7 +119,6 @@ function updatePlayers(serverPlayers) {
 
 function removePlayer(playerID) {
   players = players.filter(player => player.id !== playerID);
-  console.log('lost user ' + players.length);
 }
 
 function cursorPos(data) {
@@ -116,7 +126,7 @@ function cursorPos(data) {
     cursorID.x = data.coords.x;
     cursorID.y = data.coords.y;
 
-    let thisPlayer = players.find(player => player.id == data.id);
+    thisPlayer = players.find(player => player.id == data.id);
     r = thisPlayer.rgb.r;
     g = thisPlayer.rgb.g;
     b = thisPlayer.rgb.b;
@@ -172,9 +182,6 @@ function touchMoved(e) {
     rect(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
   }
 
-  if(lines.length > 400) {
-    socket.emit('spliceLines', lines);
-  }
   //send lines to server
   socket.emit('oldLines', data);
 
@@ -216,9 +223,6 @@ function mouseDragged(e) {
     rect(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
   }
 
-  if(lines.length > 400) {
-    socket.emit('spliceLines', lines);
-  }
   //send lines to server
   socket.emit('oldLines', data);
 
@@ -227,4 +231,8 @@ function mouseDragged(e) {
 
 function windowResized() {
   resizeCanvas(window.windowWidth, window.windowHeight);
+  closeButton.position(20, 20);
+  screenButton.position(20, windowHeight - 100);
+  colorButton.position(windowWidth - 90, 20);
+  linkButton.position(windowWidth - 90, windowHeight - 100);
 }
