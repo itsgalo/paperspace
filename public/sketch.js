@@ -90,9 +90,9 @@ function draw() {
   let n = noise(xoff) * 20;
   //players.forEach(player => player.draw(0, canvasIMG));
 
-  if(isDrawing || friendIsDrawing) {
+  if(isDrawing == true) {
     alph = 1;
-  } else {
+  } else if (isDrawing == false){
     alph += 0.01;
     if (alph >= 256) {
       alph = 0;
@@ -155,7 +155,6 @@ function mouseMoved() {
 
 function touchMoved(e) {
   isDrawing = true;
-
   let cursorProps = {
     x: mouseX,
     y: mouseY,
