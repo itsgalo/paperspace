@@ -60,6 +60,10 @@ function changeColor() {
     thisPlayer.rgb.r = rand(255);
     thisPlayer.rgb.g = rand(255);
     thisPlayer.rgb.b = rand(255);
+
+    r = thisPlayer.rgb.r;
+    g = thisPlayer.rgb.g;
+    b = thisPlayer.rgb.b;
   }
 }
 
@@ -127,9 +131,6 @@ function cursorPos(data) {
     cursorID.y = data.coords.y;
 
     thisPlayer = players.find(player => player.id == data.id);
-    r = thisPlayer.rgb.r;
-    g = thisPlayer.rgb.g;
-    b = thisPlayer.rgb.b;
 
     if (data.coords.isDrawing == true) {
       friendIsDrawing = true;
