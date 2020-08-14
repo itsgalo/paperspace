@@ -51,6 +51,7 @@ function newConnection(socket) {
       coords: cursorProps
     });
   }
+
   // socket.on('oldLines', getOldLines);
   // function getOldLines(lines) {
   //   io.emit('oldLines', lines);
@@ -70,14 +71,14 @@ function newConnection(socket) {
   //   console.log("spliced!");
   // }
 
-  //socket.on('updateCanvas', updateBuffer);
-  //function updateBuffer(updatedCanvas) {
-    //if(updatedCanvas) {
-      //io.emit('updateCanvas', updatedCanvas.toString('base64'));
+  socket.on('updateCam', updateBuffer);
+  function updateBuffer(updatedCam) {
+    if(updatedCam) {
+      io.emit('updateCam', updatedCam.toString('base64'));
       //canvasBuffer = updatedCanvas.toString('base64');
-      //console.log(updatedCanvas);
-    //}
-  //}
+      console.log(updatedCam);
+    }
+  }
 }
 
 //io.sockets.on('disconnect', socket => {

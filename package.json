@@ -22,7 +22,7 @@
   "homepage": "https://github.com/itsgalo/paperspace#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "p5": "^1.0.0",
+    "p5": "^1.1.9",
     "socket.io": "^2.3.0"
   }
 }

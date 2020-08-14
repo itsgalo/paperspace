@@ -14,11 +14,13 @@ let alph = 1;
 let friendIsDrawing = false;
 let isDrawing = false;
 let thisPlayer;
+let cam, camShot;
 
 function setup() {
   pixelDensity(1);
   noCursor();
-  createCanvas(window.windowWidth, window.windowHeight);
+
+  canvasIMG = createCanvas(window.windowWidth, window.windowHeight);
   background(bgr, bgg, bgb);
 
   socket = io.connect();
@@ -29,6 +31,7 @@ function setup() {
   socket.on('cursor', cursorPos);
   //socket.on('removeLines', rline => rLines(rline));
   //socket.on('spliceLines', sline => sLines(sline));
+  socket.on('updateCam', frame => updateFrame(frame));
 
   closeButton = createButton('×');
   closeButton.position(20, 20);
@@ -46,6 +49,7 @@ function setup() {
   linkButton.position(windowWidth - 90, windowHeight - 100);
   linkButton.mousePressed(goTo);
 
+  setTimeout(grabShot, 4000);
 }
 function goTo() {
   window.open('http://officeca.com');
@@ -53,6 +57,17 @@ function goTo() {
 function resetCanvas() {
   //socket.emit('removeLines', lines);
   background(bgr, bgg, bgb);
+}
+
+function updateFrame(buffer) {
+  //console.log(buffer);
+  //camShot = data;
+  let raw = new Image();
+  raw.src = buffer;
+  raw.onload = function () {
+    canvasIMG.drawingContext.drawImage(raw, window.windowWidth / 4, window.windowHeight/4, window.windowWidth / 2, window.windowHeight/2);
+    filter(POSTERIZE, 3);
+  }
 }
 
 function changeColor() {
@@ -67,6 +82,16 @@ function changeColor() {
   }
 }
 
+function grabShot() {
+  //let camBuffer = canvasIMG.elt.toDataURL('image/jpeg');
+  if (cam != undefined) {
+    cam.loadPixels();
+    let camBuffer = cam.canvas.toDataURL('image/jpeg');
+    socket.emit('updateCam', camBuffer);
+  }
+  setTimeout(grabShot, 4000);
+}
+
 function screenShot() {
   saveCanvas('OurPaperSpace', 'png');
 }
@@ -75,31 +100,43 @@ function newDrawing(data) {
   //draw what someone else is drawing
   for (let i = 0; i < 10; i++) {
     fill(data.r, data.g, data.b);
-    rect(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
-    rect(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
-    rect(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
-    rect(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
+    ellipse(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
+    ellipse(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
+    ellipse(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
+    ellipse(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
   }
   //console.log(data.id + ' is drawing');
 }
 
 function draw() {
-  background(bgr, bgg, bgb, alph);
+  //background(bgr, bgg, bgb, alph);
+  //filter(BLUR, 1);
+
   rectMode(CENTER);
   xoff = xoff + 0.005;
   let n = noise(xoff) * 20;
   //players.forEach(player => player.draw(0, canvasIMG));
 
-  if(isDrawing == true) {
-    alph = 1;
-  } else if (isDrawing == false){
-    alph += 0.01;
-    if (alph >= 256) {
-      alph = 0;
-    }
-  }
+  //if(isDrawing == true) {
+  //  alph = 1;
+  //} else if (isDrawing == false){
+  //  alph += 0.01;
+  //  if (alph >= 256) {
+  //    alph = 0;
+  //  }
+  //}
   for(var i = 0; i < players.length; i++){
     players[i].draw(i, canvasIMG, n);
+  }
+}
+
+function keyPressed(e) {
+  //handle camera on
+  if (keyCode === 48) {
+    if (e.shiftKey){
+      cam = createCapture(VIDEO);
+      cam.size(48, 48);
+    }
   }
 }
 
@@ -109,6 +146,11 @@ function checkPlayers(serverPlayers) {
   updatePlayers(serverPlayers);
   if(serverPlayers.length > 1) {
     roomEmpty = false;
+  }
+  if(serverPlayers.length == 1) {
+    cam = createCapture(VIDEO);
+    cam.size(50, 50);
+    //cam.hide();
   }
 }
 
@@ -151,6 +193,7 @@ function mouseMoved() {
     isDrawing: isDrawing
   }
   socket.emit('cursor', cursorProps);
+
 }
 
 function touchMoved(e) {
@@ -176,10 +219,10 @@ function touchMoved(e) {
   //draw splat from this user
   for (let i = 0; i < 10; i++) {
     fill(r, g, b);
-    rect(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
-    rect(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
-    rect(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
-    rect(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
+    ellipse(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
+    ellipse(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
+    ellipse(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
+    ellipse(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
   }
 
   //send lines to server
@@ -217,10 +260,10 @@ function mouseDragged(e) {
   //draw splat from this user
   for (let i = 0; i < 10; i++) {
     fill(r, g, b);
-    rect(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
-    rect(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
-    rect(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
-    rect(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
+    ellipse(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
+    ellipse(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
+    ellipse(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
+    ellipse(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
   }
 
   //send lines to server
