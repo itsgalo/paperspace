@@ -76,7 +76,7 @@ function newConnection(socket) {
     if(updatedCam) {
       io.emit('updateCam', updatedCam.toString('base64'));
       //canvasBuffer = updatedCanvas.toString('base64');
-      console.log(updatedCam);
+      //console.log(updatedCam);
     }
   }
 }

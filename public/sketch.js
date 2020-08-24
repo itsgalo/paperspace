@@ -49,7 +49,7 @@ function setup() {
   linkButton.position(windowWidth - 90, windowHeight - 100);
   linkButton.mousePressed(goTo);
 
-  setTimeout(grabShot, 4000);
+  setTimeout(grabShot, 1000);
 }
 function goTo() {
   window.open('http://officeca.com');
@@ -65,8 +65,33 @@ function updateFrame(buffer) {
   let raw = new Image();
   raw.src = buffer;
   raw.onload = function () {
-    canvasIMG.drawingContext.drawImage(raw, window.windowWidth / 4, window.windowHeight/4, window.windowWidth / 2, window.windowHeight/2);
-    filter(POSTERIZE, 3);
+    camShot = createImage(raw.width, raw.height);
+    camShot.drawingContext.drawImage(raw, 0, 0);
+
+    camShot.loadPixels();
+    for (let x = 0; x < camShot.width; x += 1) {
+      for (let y = 0; y < camShot.height; y += 1) {
+        let i = (y * camShot.width + x) * 4;
+
+        let r = camShot.pixels[i];
+        let g = camShot.pixels[i+1];
+        let b = camShot.pixels[i+2];
+        let a = camShot.pixels[i+3];
+
+        let luma = 0.299 * r + 0.587 * g + 0.114 * b;
+
+        let diameter = map(luma, 0, 255, 0, 10);
+        fill(255);
+        noStroke();
+        ellipse(
+          map(x, 0, camShot.width, width/4, width/2 + width/4),
+          map(y, 0, camShot.height, height/4, height/2 + height/4),
+          diameter,
+          diameter
+        );
+      }
+    }
+    //canvasIMG.drawingContext.drawImage(raw, window.windowWidth / 4, window.windowHeight/4, window.windowWidth / 2, window.windowHeight/2);
   }
 }
 
@@ -89,7 +114,7 @@ function grabShot() {
     let camBuffer = cam.canvas.toDataURL('image/jpeg');
     socket.emit('updateCam', camBuffer);
   }
-  setTimeout(grabShot, 4000);
+  setTimeout(grabShot, 1000);
 }
 
 function screenShot() {
@@ -110,7 +135,6 @@ function newDrawing(data) {
 
 function draw() {
   //background(bgr, bgg, bgb, alph);
-  //filter(BLUR, 1);
 
   rectMode(CENTER);
   xoff = xoff + 0.005;
@@ -125,6 +149,10 @@ function draw() {
   //    alph = 0;
   //  }
   //}
+  if (camShot != undefined) {
+
+  }
+
   for(var i = 0; i < players.length; i++){
     players[i].draw(i, canvasIMG, n);
   }
@@ -146,11 +174,6 @@ function checkPlayers(serverPlayers) {
   updatePlayers(serverPlayers);
   if(serverPlayers.length > 1) {
     roomEmpty = false;
-  }
-  if(serverPlayers.length == 1) {
-    cam = createCapture(VIDEO);
-    cam.size(50, 50);
-    //cam.hide();
   }
 }
 
@@ -274,6 +297,7 @@ function mouseDragged(e) {
 
 function windowResized() {
   resizeCanvas(window.windowWidth, window.windowHeight);
+  resetCanvas();
   closeButton.position(20, 20);
   screenButton.position(20, windowHeight - 100);
   colorButton.position(windowWidth - 90, 20);
