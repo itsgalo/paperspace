@@ -6,9 +6,9 @@ let players = [];
 let r = rand(255);
 let g = rand(255);
 let b = rand(255);
-let bgr = 200 + rand(50);
-let bgg = 170;
-let bgb = rand(250);
+let bgr = 177; //200 + rand(50);
+let bgg = 202; //170;
+let bgb = 242; //rand(250);
 let xoff = 0.0;
 let alph = 1;
 let friendIsDrawing = false;
@@ -67,7 +67,10 @@ function updateFrame(buffer) {
   raw.onload = function () {
     camShot = createImage(raw.width, raw.height);
     camShot.drawingContext.drawImage(raw, 0, 0);
-
+    //fill(255);
+    rect((width/2)-8, (height/2) -8, (width/2) + 40, (height/2) + 40, 10, 10, 10, 10);
+    //image(camShot, width/4, height/4, width/2, height/2);
+    //background(bgr, bgg, bgb);
     camShot.loadPixels();
     for (let x = 0; x < camShot.width; x += 1) {
       for (let y = 0; y < camShot.height; y += 1) {
@@ -80,12 +83,16 @@ function updateFrame(buffer) {
 
         let luma = 0.299 * r + 0.587 * g + 0.114 * b;
 
-        let diameter = map(luma, 0, 255, 0, 10);
-        fill(255);
-        noStroke();
+        let diameter = map(luma, 0, 255, 0, 20);
+        fill(bgr, bgg, bgb);
+        //stroke(bgr, bgg, bgb);
+        strokeWeight(2);
+        //noStroke();
         ellipse(
           map(x, 0, camShot.width, width/4, width/2 + width/4),
           map(y, 0, camShot.height, height/4, height/2 + height/4),
+          //map(x, 0, camShot.width, 10, width),
+          //map(y, 0, camShot.height, 10, height),
           diameter,
           diameter
         );

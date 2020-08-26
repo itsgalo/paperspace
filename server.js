@@ -22,7 +22,7 @@ let players = [];
 io.sockets.on('connection', newConnection);
 
 function newConnection(socket) {
-  console.log('new connection! ' + socket.id);
+  //console.log('new connection! ' + socket.id);
   //create new user
   players.push(new Player(socket.id));
   io.emit('heartbeat', players);
@@ -33,7 +33,7 @@ function newConnection(socket) {
   //io.sockets.emit('connected', {connections: totalUsers});
   //socket.broadcast.emit('new user', {user: thisID, users:totalUsers});
   socket.on('disconnect', () => {
-    console.log('lost player');
+    //console.log('lost player');
     io.sockets.emit('disconnect', socket.id);
     players = players.filter(player => player.id !== socket.id);
     //lineBuffer = lineBuffer.filter(line => line.id !== socket.id);
