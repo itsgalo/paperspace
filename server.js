@@ -1,15 +1,16 @@
 const http = require('http');
 const app = require('./app');
 let Player = require('./Player');
+let myPort = process.env.PORT || 3000;
 
-app.set('port', '3000');
+app.set('port', myPort);
 
 const server = http.createServer(app);
 server.on('listening', ()=> {
   console.log('listening on port 3000');
 });
 
-server.listen('3000', "0.0.0.0");
+server.listen(myPort, "0.0.0.0");
 
 //web sockets
 const socket = require('socket.io');
