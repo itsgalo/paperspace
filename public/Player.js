@@ -11,18 +11,13 @@ class Player {
     noStroke();
     fill(r, g, b);
     rectMode(CENTER);
-    //even number, odd number
-    if (shape % 2 == 0) {
-      ellipse(this.x, this.y+random(15,20), n, n);
-      ellipse(this.x-random(15,20), this.y, n, n);
-      ellipse(this.x, this.y-random(15,20), n, n);
-      ellipse(this.x+random(15,20), this.y, n, n);
-    } else if (shape % 2 != 0) {
-      ellipse(this.x, this.y+random(15,20), n * 0.5, n *0.5);
-      ellipse(this.x-random(15,20), this.y, n * 0.5, n *0.5);
-      ellipse(this.x, this.y-random(15,20), n * 0.5, n *0.5);
-      ellipse(this.x+random(15,20), this.y, n * 0.5, n *0.5);
-    }
+    ellipse(this.x, this.y, 5);
+    // for (let i = 0; i < 10; i++) {
+    //   ellipse(this.x + (i*random(10)), this.y + (i*random(10)), 20, 20);
+    //   ellipse(this.x - (i*random(10)), this.y - (i*random(10)), i*2, i*2);
+    //   ellipse(this.x - (i*random(10)), this.y + (i*random(10)), i*3, i*3);
+    //   ellipse(this.x + (i*random(10)), this.y - (i*random(10)), 20, 20);
+    // }
   }
 
 }

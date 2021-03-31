@@ -1,5 +1,5 @@
 let socket;
-let closeButton, screenButton, colorButton;
+let closeButton, screenButton, colorButton, linkButton;
 let canvasIMG, updatedCanvas;
 let cursors = [];
 let players = [];
@@ -18,6 +18,7 @@ let cam, camShot;
 
 function setup() {
   pixelDensity(1);
+
   noCursor();
 
   canvasIMG = createCanvas(window.windowWidth, window.windowHeight);
@@ -130,12 +131,17 @@ function screenShot() {
 
 function newDrawing(data) {
   //draw what someone else is drawing
+  xoff = xoff + 0.05;
+  r = 100 + sin(xoff)*150;
+  let rr = sin(xoff)*150;
   for (let i = 0; i < 10; i++) {
     fill(data.r, data.g, data.b);
     ellipse(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
     ellipse(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
     ellipse(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
     ellipse(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
+    ellipse(data.x+cos(i * radians(35)) * 100, data.y+sin(i * radians(35)) * 100, rr);
+    ellipse(data.x, data.y, rr);
   }
   //console.log(data.id + ' is drawing');
 }
@@ -144,8 +150,12 @@ function draw() {
   //background(bgr, bgg, bgb, alph);
 
   rectMode(CENTER);
-  xoff = xoff + 0.005;
+  //xoff = xoff + 0.008;
   let n = noise(xoff) * 20;
+
+  //manage user graients
+  //r += sin(xoff)*150;
+  //g += sin(xoff)*100;
   //players.forEach(player => player.draw(0, canvasIMG));
 
   //if(isDrawing == true) {
@@ -247,12 +257,17 @@ function touchMoved(e) {
   }
   socket.emit('mouse', data);
   //draw splat from this user
+  xoff = xoff + 0.05;
+  r = 100 + sin(xoff)*150;
+  let rr = sin(xoff)*150;
   for (let i = 0; i < 10; i++) {
     fill(r, g, b);
     ellipse(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
     ellipse(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
     ellipse(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
     ellipse(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
+    ellipse(data.x+cos(i * radians(35)) * 100, data.y+sin(i * radians(35)) * 100, rr);
+    ellipse(data.x, data.y, rr);
   }
 
   //send lines to server
@@ -288,12 +303,17 @@ function mouseDragged(e) {
   }
   socket.emit('mouse', data);
   //draw splat from this user
+  xoff = xoff + 0.05;
+  r = 100 + sin(xoff)*150;
+  let rr = sin(xoff)*150;
   for (let i = 0; i < 10; i++) {
     fill(r, g, b);
     ellipse(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
     ellipse(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
     ellipse(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
     ellipse(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
+    ellipse(data.x+cos(i * radians(35)) * 100, data.y+sin(i * radians(35)) * 100, rr);
+    ellipse(data.x, data.y, rr);
   }
 
   //send lines to server
