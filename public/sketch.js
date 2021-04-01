@@ -18,7 +18,6 @@ let cam, camShot;
 
 function setup() {
   pixelDensity(1);
-
   noCursor();
 
   canvasIMG = createCanvas(window.windowWidth, window.windowHeight);
@@ -131,18 +130,7 @@ function screenShot() {
 
 function newDrawing(data) {
   //draw what someone else is drawing
-  xoff = xoff + 0.05;
-  r = 100 + sin(xoff)*150;
-  let rr = sin(xoff)*150;
-  for (let i = 0; i < 10; i++) {
-    fill(data.r, data.g, data.b);
-    ellipse(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
-    ellipse(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
-    ellipse(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
-    ellipse(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
-    ellipse(data.x+cos(i * radians(35)) * 100, data.y+sin(i * radians(35)) * 100, rr);
-    ellipse(data.x, data.y, rr);
-  }
+  drawSplat(data);
   //console.log(data.id + ' is drawing');
 }
 
@@ -256,19 +244,7 @@ function touchMoved(e) {
     b: b
   }
   socket.emit('mouse', data);
-  //draw splat from this user
-  xoff = xoff + 0.05;
-  r = 100 + sin(xoff)*150;
-  let rr = sin(xoff)*150;
-  for (let i = 0; i < 10; i++) {
-    fill(r, g, b);
-    ellipse(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
-    ellipse(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
-    ellipse(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
-    ellipse(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
-    ellipse(data.x+cos(i * radians(35)) * 100, data.y+sin(i * radians(35)) * 100, rr);
-    ellipse(data.x, data.y, rr);
-  }
+  drawSplat(data);
 
   //send lines to server
   socket.emit('oldLines', data);
@@ -302,24 +278,29 @@ function mouseDragged(e) {
     b: b
   }
   socket.emit('mouse', data);
-  //draw splat from this user
-  xoff = xoff + 0.05;
-  r = 100 + sin(xoff)*150;
-  let rr = sin(xoff)*150;
-  for (let i = 0; i < 10; i++) {
-    fill(r, g, b);
-    ellipse(data.x + (i*random(10)), data.y + (i*random(10)), 20, 20);
-    ellipse(data.x - (i*random(10)), data.y - (i*random(10)), i*2, i*2);
-    ellipse(data.x - (i*random(10)), data.y + (i*random(10)), i*3, i*3);
-    ellipse(data.x + (i*random(10)), data.y - (i*random(10)), 20, 20);
-    ellipse(data.x+cos(i * radians(35)) * 100, data.y+sin(i * radians(35)) * 100, rr);
-    ellipse(data.x, data.y, rr);
-  }
+
+  drawSplat(data);
 
   //send lines to server
   socket.emit('oldLines', data);
 
   return false;
+}
+function drawSplat(d){
+  //draw splat from this user
+  xoff = xoff + 0.03;
+  r = abs(100 + sin(xoff)*150);
+  g = abs(random(70,100) + sin(xoff)*15);
+  let rr = sin(xoff)*150;
+  for (let i = 0; i < 10; i++) {
+    fill(d.r, d.g, d.b);
+    ellipse(d.x + (i*random(10)), d.y + (i*random(10)), 5, 5);
+    ellipse(d.x - (i*random(10)), d.y - (i*random(10)), i*2, i*2);
+    ellipse(d.x - (i*random(10)), d.y + (i*random(10)), i, i);
+    ellipse(d.x + (i*random(10)), d.y - (i*random(10)), 5, 5);
+    ellipse(d.x+cos(i * radians(35)) * noise(xoff*i)*100, d.y+sin(i * radians(35)) * noise(xoff*i)*100, rr);
+    ellipse(d.x, d.y, rr);
+  }
 }
 
 function windowResized() {
