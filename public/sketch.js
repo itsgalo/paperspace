@@ -3,9 +3,9 @@ let closeButton, screenButton, colorButton, linkButton;
 let canvasIMG, updatedCanvas;
 let cursors = [];
 let players = [];
-let r = rand(255);
-let g = rand(255);
-let b = rand(255);
+let r = rand(155);
+let g = rand(20);
+let b = rand(155);
 let bgr = 105; //200 + rand(50);
 let bgg = 179; //170;
 let bgb = 231; //rand(250);
@@ -102,18 +102,6 @@ function updateFrame(buffer) {
   }
 }
 
-function changeColor() {
-  if (thisPlayer != undefined) {
-    thisPlayer.rgb.r = rand(255);
-    thisPlayer.rgb.g = rand(255);
-    thisPlayer.rgb.b = rand(255);
-
-    r = thisPlayer.rgb.r;
-    g = thisPlayer.rgb.g;
-    b = thisPlayer.rgb.b;
-  }
-}
-
 function grabShot() {
   //let camBuffer = canvasIMG.elt.toDataURL('image/jpeg');
   if (cam != undefined) {
@@ -154,9 +142,6 @@ function draw() {
   //    alph = 0;
   //  }
   //}
-  if (camShot != undefined) {
-
-  }
 
   for(var i = 0; i < players.length; i++){
     players[i].draw(i, canvasIMG, n);
@@ -232,7 +217,6 @@ function touchMoved(e) {
     isDrawing: isDrawing
   }
   socket.emit('cursor', cursorProps);
-
   e.preventDefault();
 
   let data = {
@@ -245,10 +229,8 @@ function touchMoved(e) {
   }
   socket.emit('mouse', data);
   drawSplat(data);
-
   //send lines to server
   socket.emit('oldLines', data);
-
   return false;
 }
 function touchEnded(e) {
@@ -266,7 +248,6 @@ function mouseDragged(e) {
     isDrawing: isDrawing
   }
   socket.emit('cursor', cursorProps);
-
   e.preventDefault();
 
   let data = {
@@ -278,20 +259,31 @@ function mouseDragged(e) {
     b: b
   }
   socket.emit('mouse', data);
-
   drawSplat(data);
 
   //send lines to server
   socket.emit('oldLines', data);
-
   return false;
 }
+
+function changeColor() {
+  if (thisPlayer != undefined) {
+    thisPlayer.rgb.r = Math.floor(random(0, 100));
+    thisPlayer.rgb.g = Math.floor(random(0, 255));
+    thisPlayer.rgb.b = Math.floor(random(0, 255));
+
+    r = thisPlayer.rgb.r;
+    g = thisPlayer.rgb.g;
+    b = thisPlayer.rgb.b;
+  }
+}
+
 function drawSplat(d){
   //draw splat from this user
   xoff = xoff + 0.03;
-  r = abs(100 + sin(xoff)*150);
-  g = abs(random(70,100) + sin(xoff)*15);
-  let rr = sin(xoff)*150;
+  r = abs(thisPlayer.rgb.r + (sin(xoff)*150));
+  g = abs(random(thisPlayer.rgb.g - 30, thisPlayer.rgb.g) + sin(xoff)*15);
+  let rr = sin(xoff)*130;
   for (let i = 0; i < 10; i++) {
     fill(d.r, d.g, d.b);
     ellipse(d.x + (i*random(10)), d.y + (i*random(10)), 5, 5);
